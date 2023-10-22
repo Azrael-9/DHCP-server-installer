@@ -26,9 +26,9 @@ echo -e "\n${greenColour}[+] Bienvenido al instalador automatico de servidores D
 echo -e "${purpleColour}Creador por: Azrael\n${endColour}"
 echo -ne "\n\n${greenColour}[+] Primero, debemos configurar su ip fisica, que ip desearia tener?${endColour} " && read ip_fisica
 echo -ne "${greenColour}[+] Que IP de puerta de enlace deberiamos usar?${endColour} " && read ip_router
-echo -ne "[+] Porfavor, indique el servidor DNS " && read ip_dns
+echo -ne "${greenColour}[+] Porfavor, indique el servidor DNS:${endColour} " && read ip_dns
 
-echo -e "\n\n[+]Muchas gracias, enseguida comenzará el proceso de configuracion de la IP"
+echo -e "\n\n${greenColour}[+]Muchas gracias, enseguida comenzará el proceso de configuracion de la IP${endColour}"
 
 $(echo -e "network:
   ethernets:
@@ -46,32 +46,32 @@ $(echo -e "network:
 " > /etc/netplan/00-installer-config.yaml)
 
 $(netplan apply)
-echo -e "\n [+] La configuración se ha establecido exitosamente, ahora procederemos a la instalación del servidor dhcp"
+echo -e "\n ${greenColour}[+] La configuración se ha establecido exitosamente, ahora procederemos a la instalación del servidor dhcp${endColour}"
 $(apt install isc-dhcp-server -y 2>/dev/null)
 
-echo -ne "[+] Desea hacer un segundo rango con tal de hacer una excepción de ip saltando esta pasando a la siguiente ip?\n Por ejemplo, primer rango 1-20 segundo 22-30 saltandonos la 21.\n Indique por favor con Y/N (debe de estar en mayusculas) " && read exception_yn
+echo -ne "${greenColour}[+] Desea hacer un segundo rango con tal de hacer una excepción de ip saltando esta pasando a la siguiente ip?\n Por ejemplo, primer rango 1-20 segundo 22-30 saltandonos la 21.\n Indique por favor con Y/N (debe de estar en mayusculas)${endColour} " && read exception_yn
 
 if [ $exception_yn == "Y" ]; then
 
-  echo -ne "[+] Porfavor, indique la ip de la red: " && read ip_net
-  echo -ne "[+] Porfavor, indique la mascara: " && read mascara
-  echo -ne "[+] Porfavor, indique la primera ip del primer rango: " && read uno_rango
-  echo -ne "[+] Porfavor, indique la ultima ip del primer rango: " && read dos_rango
-  echo -ne "[+] Porfavor, indique la primera ip del segundo rango: " && read uno_rangodos
-  echo -ne "[+] Porfavor, indique la ultima ip del segundo rango: " && read dos_rangodos
-  echo -ne "[+] Porfavor, indique la ip del broadcast: " && read ip_broadcast
-  echo -ne "[+] Porfavor, indique el nombre de dominio: " && read domain_name
-  echo -ne "[+] Porfavor, indique la cantidad de segundos que durara el lease time: " && read lease_time
+  echo -ne "${greenColour}[+] Porfavor, indique la ip de la red:${endColour} " && read ip_net
+  echo -ne "${greenColour}[+] Porfavor, indique la mascara:${endColour} " && read mascara
+  echo -ne "${greenColour}[+] Porfavor, indique la primera ip del primer rango:${endColour} " && read uno_rango
+  echo -ne "${greenColour}[+] Porfavor, indique la ultima ip del primer rango:${endColour} " && read dos_rango
+  echo -ne "${greenColour}[+] Porfavor, indique la primera ip del segundo rango:${endColour} " && read uno_rangodos
+  echo -ne "${greenColour}[+] Porfavor, indique la ultima ip del segundo rango:${endColour} " && read dos_rangodos
+  echo -ne "${greenColour}[+] Porfavor, indique la ip del broadcast:${endColour} " && read ip_broadcast
+  echo -ne "${greenColour}[+] Porfavor, indique el nombre de dominio:${endColour} " && read domain_name
+  echo -ne "${greenColour}[+] Porfavor, indique la cantidad de segundos que durara el lease time:${endColour} " && read lease_time
 
-  echo -ne "[+] Desea resevar una ip para una MAC? indique con Y/N " && read reserva_respuesta
+  echo -ne "${greenColour}[+] Desea resevar una ip para una MAC? indique con Y/N${endColour} " && read reserva_respuesta
     if [ $reserva_respuesta == "Y" ]; then
-      echo -ne "[+] Porfavor, indique el nombre de la reserva: " && read nombre_reserva
-      echo -ne "[+] Porfavor, indique la ip que quiere resevar: " && read ip_reservada
-      echo -ne "[+] Porfavor, indique la dirección MAC separada por : de la maquina la cual va a ser reservada la ip" && read mac_reservada
-      echo -n "[+] Realizando la configuracion"
+      echo -ne "${greenColour}[+] Porfavor, indique el nombre de la reserva:${endColour} " && read nombre_reserva
+      echo -ne "${greenColour}[+] Porfavor, indique la ip que quiere resevar:${endColour} " && read ip_reservada
+      echo -ne "${greenColour}[+] Porfavor, indique la dirección MAC separada por : de la maquina la cual va a ser reservada la ip${endColour}" && read mac_reservada
+      echo -n "${greenColour}[+] Realizando la configuracion${endColour}"
       $(echo -e "# CONFIGURACION
 
-subnet $ip_net $mascara{
+subnet $ip_net netmask $mascara{
       range $uno_rango $dos_rango;
       range $uno_rangodos $dos_rangodos;
       option routers $ip_router;
@@ -86,12 +86,12 @@ subnet $ip_net $mascara{
           fixed-address $ip_reservada;
       }
   } " > /etc/dhcp/dhcpd.conf)
-      echo -e "La configuración ha sido realizada con exito"
+      echo -e "${greenColour}La configuración ha sido realizada con exito${endColour}"
     elif [ $reserva_respuesta == "N" ]; then
-      echo -e "[+] Aplicando la configuracion"
+      echo -e "${greenColour}[+] Aplicando la configuracion${endColour}"
       $(echo -e "# CONFIGURACION
 
-subnet $ip_net $mascara{
+subnet $ip_net netmask $mascara{
       range $uno_rango $dos_rango;
       range $uno_rangodos $dos_rangodos;
       option routers $ip_router;
@@ -103,29 +103,29 @@ subnet $ip_net $mascara{
 
   } " > /etc/dhcp/dhcpd.conf)      
     else
-      echo -e "[!] El input proporcionado no es valido"
+      echo -e "${redColour}[!] El input proporcionado no es valido${endColour}"
       tput cnorm
       exit 1
     fi
 
 elif [ $exception_yn == "N" ]; then
-  echo -ne "[+] Porfavor, indique la ip de la red: " && read ip_net
-  echo -ne "[+] Porfavor, indique la mascara: " && read mascara
-  echo -ne "[+] Porfavor, indique la primera ip del primer rango: " && read uno_rango
-  echo -ne "[+] Porfavor, indique la ultima ip del primer rango: " && read dos_rango
-  echo -ne "[+] Porfavor, indique la ip del broadcast: " && read ip_broadcast
-  echo -ne "[+] Porfavor, indique el nombre de dominio: " && read domain_name
-  echo -ne "[+] Porfavor, indique la cantidad de segundos que durara el lease time: " && read lease_time
+  echo -ne "${greenColour}[+] Porfavor, indique la ip de la red:${endColour} " && read ip_net
+  echo -ne "${greenColour}[+] Porfavor, indique la mascara:${endColour} " && read mascara
+  echo -ne "${greenColour}[+] Porfavor, indique la primera ip del primer rango:${endColour} " && read uno_rango
+  echo -ne "${greenColour}[+] Porfavor, indique la ultima ip del primer rango:${endColour} " && read dos_rango
+  echo -ne "${greenColour}[+] Porfavor, indique la ip del broadcast:${endColour} " && read ip_broadcast
+  echo -ne "${greenColour}[+] Porfavor, indique el nombre de dominio:${endColour} " && read domain_name
+  echo -ne "${greenColour}[+] Porfavor, indique la cantidad de segundos que durara el lease time:${endColour} " && read lease_time
 
-  echo -ne "[+] Desea resevar una ip para una MAC? indique con Y/N " && read reserva_respuesta
+  echo -ne "${greenColour}[+] Desea resevar una ip para una MAC? indique con Y/N ${endColour}" && read reserva_respuesta
     if [ $reserva_respuesta == "Y" ]; then
-      echo -ne "[+] Porfavor, indique el nombre de la reserva: " && read nombre_reserva
-      echo -ne "[+] Porfavor, indique la ip que quiere resevar: " && read ip_reservada
-      echo -ne "[+] Porfavor, indique la dirección MAC separada por : de la maquina la cual va a ser reservada la ip" && read mac_reservada
-      echo -n "[+] Realizando la configuracion"
+      echo -ne "${greenColour}[+] Porfavor, indique el nombre de la reserva:${endColour} " && read nombre_reserva
+      echo -ne "${greenColour}[+] Porfavor, indique la ip que quiere resevar:${endColour} " && read ip_reservada
+      echo -ne "${greenColour}[+] Porfavor, indique la dirección MAC separada por : de la maquina la cual va a ser reservada la ip: ${endColour}" && read mac_reservada
+      echo -n "${greenColour}[+] Realizando la configuracion${endColour}"
       $(echo -e "# CONFIGURACION
 
-subnet $ip_net $mascara{
+subnet $ip_net netmask $mascara{
       range $uno_rango $dos_rango;
       option routers $ip_router;
       option subnet-mask $mascara;
@@ -139,12 +139,12 @@ subnet $ip_net $mascara{
           fixed-address $ip_reservada;
       }
   } " > /etc/dhcp/dhcpd.conf)
-      echo -e "La configuración ha sido realizada con exito"
+      echo -e "${greenColour}La configuración ha sido realizada con exito${endColour}"
     elif [ $reserva_respuesta == "N" ]; then
-      echo -e "[+] Aplicando la configuracion"
+      echo -e "${greenColour}[+] Aplicando la configuracion${endColour}"
       $(echo -e "# CONFIGURACION
 
-subnet $ip_net $mascara{
+subnet $ip_net netmask $mascara{
       range $uno_rango $dos_rango;
       option routers $ip_router;
       option subnet-mask $mascara;
@@ -155,19 +155,19 @@ subnet $ip_net $mascara{
 
   } " > /etc/dhcp/dhcpd.conf)      
     else
-      echo -e "[!] El input proporcionado no es valido"
+      echo -e "${redColour}[!] El input proporcionado no es valido${endColour}"
       tput cnorm
       exit 1
     fi
 else
-  "[!] El input proporcionado no es correcto, recuerde poner Y si es que si o N si es que no"
+  "${redColour}[!] El input proporcionado no es correcto, recuerde poner Y si es que si o N si es que no${endColour}"
   tput cnorm
   exit 1
 fi
 
 $(service isc-dhcp-server restart)
 
-echo -e "[+] La configuración del servidor dhcp ha terminado, porfavor compruebe el status del servidor para verificar su exito"
+echo -e "${blueColour}[+] La configuración del servidor dhcp ha terminado, porfavor compruebe el status del servidor para verificar su exito${endColour}"
 
 tput cnorm
 exit 0
